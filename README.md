@@ -56,7 +56,7 @@ your user account.
 Next, we need to install our depenedencies:
 
 ```bash
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 Run the application using the `python` command.
