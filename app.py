@@ -1,8 +1,8 @@
 import os, re;
 from flask import Flask, jsonify, request, Response
 from faker import Factory
-from twilio.util import TwilioCapability
-import twilio.twiml
+from twilio.jwt.client import ClientCapabilityToken
+from twilio.twiml.voice_response import VoiceResponse
 
 app = Flask(__name__)
 fake = Factory.create()
@@ -19,23 +19,23 @@ def token():
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
     application_sid = os.environ['TWILIO_TWIML_APP_SID']
-    
+
     # Generate a random user name
     identity = alphanumeric_only.sub('', fake.user_name())
 
     # Create a Capability Token
-    capability = TwilioCapability(account_sid, auth_token)
+    capability = ClientCapabilityToken(account_sid, auth_token)
     capability.allow_client_outgoing(application_sid)
     capability.allow_client_incoming(identity)
-    token = capability.generate()
+    token = capability.to_jwt()
 
     # Return token info as JSON
     return jsonify(identity=identity, token=token)
 
-    
+
 @app.route("/voice", methods=['POST'])
 def voice():
-    resp = twilio.twiml.Response()
+    resp = VoiceResponse()
     if "To" in request.form and request.form["To"] != '':
         dial = resp.dial(callerId=os.environ['TWILIO_CALLER_ID'])
         # wrap the phone number or client name in the appropriate TwiML verb
