@@ -11,3 +11,4 @@ _mailinglist
 .tox
 .env
 .env.ps1
+venv
