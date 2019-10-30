@@ -3,12 +3,12 @@
 import os
 import re
 from flask import Flask, jsonify, request, Response
-from faker import Factory
+from faker import Faker
 from twilio.jwt.client import ClientCapabilityToken
 from twilio.twiml.voice_response import VoiceResponse, Dial
 
 app = Flask(__name__)
-fake = Factory.create()
+fake = Faker()
 alphanumeric_only = re.compile('[\W_]+')
 phone_pattern = re.compile(r"^[\d\+\-\(\) ]+$")
 
