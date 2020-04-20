@@ -4,8 +4,12 @@ import os
 import re
 from flask import Flask, jsonify, request, Response
 from faker import Faker
-from twilio.jwt.client import ClientCapabilityToken
+from twilio.jwt.access_token import AccessToken
+from twilio.jwt.access_token.grants import VoiceGrant
 from twilio.twiml.voice_response import VoiceResponse, Dial
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 fake = Faker()
@@ -24,15 +28,25 @@ def token():
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
     application_sid = os.environ['TWILIO_TWIML_APP_SID']
+    api_key = os.environ['API_KEY']
+    api_secret = os.environ['API_SECRET']
 
     # Generate a random user name
     identity = alphanumeric_only.sub('', fake.user_name())
+    
+    # Create access token with credentials
+    token = AccessToken(account_sid, api_key, api_secret, identity=identity)
 
-    # Create a Capability Token
-    capability = ClientCapabilityToken(account_sid, auth_token)
-    capability.allow_client_outgoing(application_sid)
-    capability.allow_client_incoming(identity)
-    token = capability.to_jwt()
+    # Create a Voice grant and add to token
+    voice_grant = VoiceGrant(
+        outgoing_application_sid=application_sid,
+        incoming_allow=True,
+    )
+    token.add_grant(voice_grant)
+
+    # Return token info as JSON
+    token=token.to_jwt()
+
 
     # Return token info as JSON
     return jsonify(identity=identity, token=token.decode('utf-8'))
