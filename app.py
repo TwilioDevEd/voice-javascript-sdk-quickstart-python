@@ -26,7 +26,6 @@ def index():
 def token():
     # get credentials for environment variables
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    auth_token = os.environ['TWILIO_AUTH_TOKEN']
     application_sid = os.environ['TWILIO_TWIML_APP_SID']
     api_key = os.environ['API_KEY']
     api_secret = os.environ['API_SECRET']
