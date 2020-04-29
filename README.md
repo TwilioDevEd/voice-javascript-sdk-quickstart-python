@@ -55,16 +55,23 @@ your user account.
 
 ## All Platforms
 
+Create a new virtual environment. If using vanilla [virtualenv](https://virtualenv.pypa.io/en/latest/):
+
+```
+virtualenv venv
+source venv/bin/activate
+```
+
 Next, we need to install our depenedencies:
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
-Run the application using the `python` command.
+Run the application using the `python3` command or the executable for Python 3.
 
 ```bash
-python app.py
+python3 app.py
 ```
 
 Your application should now be running at http://localhost:5000.
