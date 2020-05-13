@@ -7,44 +7,59 @@
 
   log('Requesting Capability Token...');
   $.getJSON('/token')
-    .done(function (data) {
+    .then(function (data) {
       log('Got a token.');
       console.log('Token: ' + data.token);
 
       // Setup Twilio.Device
-      Twilio.Device.setup(data.token);
-
-      Twilio.Device.ready(function (device) {
-        log('Twilio.Device Ready!');
-        document.getElementById('call-controls').style.display = 'block';
+      device = new Twilio.Device(data.token, {
+        // Set Opus as our preferred codec. Opus generally performs better, requiring less bandwidth and
+        // providing better audio quality in restrained network conditions. Opus will be default in 2.0.
+        codecPreferences: ["opus", "pcmu"],
+        // Use fake DTMF tones client-side. Real tones are still sent to the other end of the call,
+        // but the client-side DTMF tones are fake. This prevents the local mic capturing the DTMF tone
+        // a second time and sending the tone twice. This will be default in 2.0.
+        fakeLocalDTMF: true,
+        // Use `enableRingingState` to enable the device to emit the `ringing`
+        // state. The TwiML backend also needs to have the attribute
+        // `answerOnBridge` also set to true in the `Dial` verb. This option
+        // changes the behavior of the SDK to consider a call `ringing` starting
+        // from the connection to the TwiML backend to when the recipient of
+        // the `Dial` verb answers.
+        enableRingingState: true
       });
 
-      Twilio.Device.error(function (error) {
-        log('Twilio.Device Error: ' + error.message);
+      device.on("ready", function (device) {
+        log("Twilio.Device Ready!");
+        document.getElementById("call-controls").style.display = "block";
       });
 
-      Twilio.Device.connect(function (conn) {
-        log('Successfully established call!');
-        document.getElementById('button-call').style.display = 'none';
-        document.getElementById('button-hangup').style.display = 'inline';
+      device.on("error", function (error) {
+        log("Twilio.Device Error: " + error.message);
+      });
+
+      device.on("connect", function (conn) {
+        log("Successfully established call!");
+        document.getElementById("button-call").style.display = "none";
+        document.getElementById("button-hangup").style.display = "inline";
         volumeIndicators.style.display = 'block';
         bindVolumeIndicators(conn);
       });
 
-      Twilio.Device.disconnect(function (conn) {
-        log('Call ended.');
-        document.getElementById('button-call').style.display = 'inline';
-        document.getElementById('button-hangup').style.display = 'none';
+      device.on("disconnect", function (conn) {
+        log("Call ended.");
+        document.getElementById("button-call").style.display = "inline";
+        document.getElementById("button-hangup").style.display = "none";
         volumeIndicators.style.display = 'none';
       });
 
-      Twilio.Device.incoming(function (conn) {
-        log('Incoming connection from ' + conn.parameters.From);
-        var archEnemyPhoneNumber = '+12099517118';
+      device.on("incoming", function (conn) {
+        log("Incoming connection from " + conn.parameters.From);
+        var archEnemyPhoneNumber = "+12093373517";
 
         if (conn.parameters.From === archEnemyPhoneNumber) {
           conn.reject();
-          log('It\'s your nemesis. Rejected call.');
+          log("It's your nemesis. Rejected call.");
         } else {
           // accept the incoming connection and start two-way audio
           conn.accept();
@@ -53,17 +68,18 @@
 
       setClientNameUI(data.identity);
 
-      Twilio.Device.audio.on('deviceChange', updateAllDevices);
+      device.audio.on("deviceChange", updateAllDevices.bind(device));
 
       // Show audio selection UI if it is supported by the browser.
-      if (Twilio.Device.audio.isSelectionSupported) {
-        document.getElementById('output-selection').style.display = 'block';
+      if (device.audio.isOutputSelectionSupported) {
+        document.getElementById("output-selection").style.display = "block";
       }
     })
-    .fail(function () {
-      log('Could not get a token from server!');
+    .catch(function (err) {
+      console.log(err);
+      log("Could not get a token from server!");
     });
-
+    
   // Bind button to make call
   document.getElementById('button-call').onclick = function () {
     // get the phone number to connect the call to
@@ -72,13 +88,20 @@
     };
 
     console.log('Calling ' + params.To + '...');
-    Twilio.Device.connect(params);
+    if (device) {
+      var outgoingConnection = device.connect(params);
+      outgoingConnection.on("ringing", function () {
+        log("Ringing...");
+      });
+    }
   };
 
   // Bind button to hangup call
   document.getElementById('button-hangup').onclick = function () {
     log('Hanging up...');
-    Twilio.Device.disconnectAll();
+    if (device) {
+      device.disconnectAll();
+    }
   };
 
   document.getElementById('get-devices').onclick = function() {
@@ -86,24 +109,34 @@
       .then(updateAllDevices);
   };
 
-  speakerDevices.addEventListener('change', function() {
-    var selectedDevices = [].slice.call(speakerDevices.children)
-      .filter(function(node) { return node.selected; })
-      .map(function(node) { return node.getAttribute('data-id'); });
-    
-    Twilio.Device.audio.speakerDevices.set(selectedDevices);
+  speakerDevices.addEventListener("change", function () {
+    var selectedDevices = [].slice
+      .call(speakerDevices.children)
+      .filter(function (node) {
+        return node.selected;
+      })
+      .map(function (node) {
+        return node.getAttribute("data-id");
+      });
+
+    device.audio.speakerDevices.set(selectedDevices);
   });
 
-  ringtoneDevices.addEventListener('change', function() {
-    var selectedDevices = [].slice.call(ringtoneDevices.children)
-      .filter(function(node) { return node.selected; })
-      .map(function(node) { return node.getAttribute('data-id'); });
-    
-    Twilio.Device.audio.ringtoneDevices.set(selectedDevices);
+  ringtoneDevices.addEventListener("change", function () {
+    var selectedDevices = [].slice
+      .call(ringtoneDevices.children)
+      .filter(function (node) {
+        return node.selected;
+      })
+      .map(function (node) {
+        return node.getAttribute("data-id");
+      });
+
+    device.audio.ringtoneDevices.set(selectedDevices);
   });
 
   function bindVolumeIndicators(connection) {
-    connection.volume(function(inputVolume, outputVolume) {
+    connection.volume(function (inputVolume, outputVolume) {
       var inputColor = 'red';
       if (inputVolume < .50) {
         inputColor = 'green';
@@ -127,25 +160,28 @@
   }
 
   function updateAllDevices() {
-    updateDevices(speakerDevices, Twilio.Device.audio.speakerDevices.get());
-    updateDevices(ringtoneDevices, Twilio.Device.audio.ringtoneDevices.get());
+    updateDevices(speakerDevices, device.audio.speakerDevices.get());
+    updateDevices(ringtoneDevices, device.audio.ringtoneDevices.get());
   }
 });
 
 // Update the available ringtone and speaker devices
 function updateDevices(selectEl, selectedDevices) {
-  selectEl.innerHTML = '';
-  Twilio.Device.audio.availableOutputDevices.forEach(function(device, id) {
-    var isActive = (selectedDevices.size === 0 && id === 'default');
-    selectedDevices.forEach(function(device) {
-      if (device.deviceId === id) { isActive = true; }
+  selectEl.innerHTML = "";
+
+  device.audio.availableOutputDevices.forEach(function (device, id) {
+    var isActive = selectedDevices.size === 0 && id === "default";
+    selectedDevices.forEach(function (device) {
+      if (device.deviceId === id) {
+        isActive = true;
+      }
     });
 
-    var option = document.createElement('option');
+    var option = document.createElement("option");
     option.label = device.label;
-    option.setAttribute('data-id', id);
+    option.setAttribute("data-id", id);
     if (isActive) {
-      option.setAttribute('selected', 'selected');
+      option.setAttribute("selected", "selected");
     }
     selectEl.appendChild(option);
   });

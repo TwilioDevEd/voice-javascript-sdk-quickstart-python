@@ -12,3 +12,6 @@ _mailinglist
 .env
 .env.ps1
 venv
+.vscode
+__pycache__
+.pytest_cache
