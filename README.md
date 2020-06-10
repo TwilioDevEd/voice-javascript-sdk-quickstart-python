@@ -75,30 +75,24 @@ Before we begin, we need to collect all the config values we need to run the app
    After re-running the script, the environment variables will be peramently set for
    your user account.
 
-4. Create the virtual environment, load it and install the dependencies.
-
-   ```bash
-   make install
-   ```
-
-5. Run the application, will run on port 5000.
+4. Run the application, will run on port 5000.
 
    ```bash
    make serve
    ```
 
-6. Navigate to [http://localhost:5000](http://localhost:5000)
+5. Navigate to [http://localhost:5000](http://localhost:5000)
 
-7. Expose your application to the wider internet using [ngrok](https://ngrok.com/download). You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html) for more details. This step **is important** because the application won't work as expected if you run it through localhost.
+6. Expose your application to the wider internet using [ngrok](https://ngrok.com/download). You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html) for more details. This step **is important** because the application won't work as expected if you run it through localhost.
 
    ```bash
    ngrok http 5000
    ```
 
-8. When ngrok starts up, it will assign a unique URL to your tunnel.
+7. When ngrok starts up, it will assign a unique URL to your tunnel.
    It might be something like `https://asdf456.ngrok.io`. Take note of this.
 
-9. [Configure your TwiML app](https://www.twilio.com/console/voice/twiml/apps)'s
+8. [Configure your TwiML app](https://www.twilio.com/console/voice/twiml/apps)'s
 Voice "REQUEST URL" to be your ngrok URL plus `/voice`. For example:
 
    ![screenshot of twiml app](https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/TwilioClientRequestUrl.original.png)
@@ -110,6 +104,25 @@ Voice "REQUEST URL" to be your ngrok URL plus `/voice`. For example:
    We'd recommend Google Chrome or Mozilla Firefox instead.
 
    ![screenshot of phone app](https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/TwilioClientQuickstart.original.png)
+
+That's it!
+
+### Docker
+
+If you have [Docker](https://www.docker.com/) already installed on your machine, you can use our `docker-compose.yml` to setup your project.
+
+1. Make sure you have the project cloned.
+2. Setup the `.env` file as outlined in the [Local Development](#local-development) steps.
+3. Run `docker-compose up`.
+4. Follow the steps in [Local Development](#local-development) on how to expose your port to Twilio using a tool like [ngrok](https://ngrok.com/) and configure the remaining parts of your application.
+
+### Tests
+
+You can run the tests locally with the following command. Before running, make sure the virtual environment is activated.
+
+```bash
+$ python3 -m pytest
+```
 
 ### Cloud deployment
 
