@@ -18,4 +18,10 @@ else
 endif
 
 serve:
+ifeq ($(UNAME), Windows)
+	venv\Scripts\activate.bat; \
 	python3 app.py
+else
+	. venv/bin/activate; \
+	python3 app.py
+endif
