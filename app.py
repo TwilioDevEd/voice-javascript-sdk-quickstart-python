@@ -48,7 +48,7 @@ def token():
 
 
     # Return token info as JSON
-    return jsonify(identity=identity, token=token.decode('utf-8'))
+    return jsonify(identity=identity, token=token)
 
 
 @app.route("/voice", methods=['POST'])
