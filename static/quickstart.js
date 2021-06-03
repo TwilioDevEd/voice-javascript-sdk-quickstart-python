@@ -17,7 +17,9 @@
         codecPreferences: ["opus", "pcmu"],
       });
 
-      device.on("ready", function (device) {
+      device.register();
+
+      device.on("registered", function (device) {
         log("Twilio.Device Ready!");
         document.getElementById("call-controls").style.display = "block";
       });
