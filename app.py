@@ -2,7 +2,7 @@
 
 import os
 import re
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, redirect
 from faker import Faker
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VoiceGrant
@@ -67,6 +67,10 @@ def voice():
         resp.say("Thanks for calling!")
 
     return Response(str(resp), mimetype='text/xml')
+
+@app.route("/static/twilio.min.js")
+def static_files():
+    return redirect("/static/node_modules/@twilio/voice-sdk/dist/twilio.min.js")
 
 
 if __name__ == '__main__':
