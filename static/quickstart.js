@@ -4,6 +4,8 @@
   var outputVolumeBar = document.getElementById('output-volume');
   var inputVolumeBar = document.getElementById('input-volume');
   var volumeIndicators = document.getElementById('volume-indicators');
+  var device;
+  var outgoingCall;
   log('Requesting Access Token...');
   $.getJSON('/token')
     .then(function (data) {
@@ -26,21 +28,6 @@
 
       device.on("error", function (error) {
         log("Twilio.Device Error: " + error.message);
-      });
-
-      device.on("connect", function (conn) {
-        log("Successfully established call!");
-        document.getElementById("button-call").style.display = "none";
-        document.getElementById("button-hangup").style.display = "inline";
-        volumeIndicators.style.display = 'block';
-        bindVolumeIndicators(conn);
-      });
-
-      device.on("disconnect", function (conn) {
-        log("Call ended.");
-        document.getElementById("button-call").style.display = "inline";
-        document.getElementById("button-hangup").style.display = "none";
-        volumeIndicators.style.display = 'none';
       });
 
       device.on("incoming", function (conn) {
@@ -69,6 +56,31 @@
       console.log(err);
       log("Could not get a token from server!");
     });
+
+  function callEstablished (call) {
+    call.addListener("accept", callConnected);
+    call.addListener("disconnect", callDisconnected);
+
+    document.getElementById('button-hangup').onclick = function () {
+      log('Hanging up...');
+      call.disconnect();
+    }
+  }
+
+  function callConnected (call) {
+    log("Successfully established call!");
+    document.getElementById("button-call").style.display = "none";
+    document.getElementById("button-hangup").style.display = "inline";
+    volumeIndicators.style.display = 'block';
+    bindVolumeIndicators(call);
+  };
+
+  function callDisconnected (call) {
+    log("Call ended.");
+    document.getElementById("button-call").style.display = "inline";
+    document.getElementById("button-hangup").style.display = "none";
+    volumeIndicators.style.display = 'none';
+  };
     
   // Bind button to make call
   document.getElementById('button-call').onclick = function () {
@@ -79,18 +91,8 @@
 
     console.log('Calling ' + params.To + '...');
     if (device) {
-      var outgoingConnection = device.connect(params);
-      outgoingConnection.on("ringing", function () {
-        log("Ringing...");
-      });
-    }
-  };
-
-  // Bind button to hangup call
-  document.getElementById('button-hangup').onclick = function () {
-    log('Hanging up...');
-    if (device) {
-      device.disconnectAll();
+      outgoingCall = device.connect({params: params});
+      outgoingCall.then(callEstablished);
     }
   };
 
