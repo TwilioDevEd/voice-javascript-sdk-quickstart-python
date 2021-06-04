@@ -152,13 +152,13 @@
   }
 
   function updateAllDevices() {
-    updateDevices(speakerDevices, device.audio.speakerDevices.get());
-    updateDevices(ringtoneDevices, device.audio.ringtoneDevices.get());
+    updateDevices(speakerDevices, device.audio.speakerDevices.get(), device);
+    updateDevices(ringtoneDevices, device.audio.ringtoneDevices.get(), device);
   }
 });
 
 // Update the available ringtone and speaker devices
-function updateDevices(selectEl, selectedDevices) {
+function updateDevices(selectEl, selectedDevices, device) {
   selectEl.innerHTML = "";
 
   device.audio.availableOutputDevices.forEach(function (device, id) {
