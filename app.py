@@ -47,7 +47,6 @@ def token():
     # Return token info as JSON
     token=token.to_jwt()
 
-
     # Return token info as JSON
     return jsonify(identity=identity, token=token)
 
@@ -60,7 +59,7 @@ def voice():
         dial = Dial()
         dial.client(identity)
         resp.append(dial)
-    elif request.form.get("Caller").startswith("client") and request.form.get("phone"):
+    elif request.form.get("phone"):
         # Placing an outbound call from the Twilio client
         dial = Dial(caller_id=twilio_number)
         # wrap the phone number or client name in the appropriate TwiML verb
