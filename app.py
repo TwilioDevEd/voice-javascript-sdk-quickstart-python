@@ -54,7 +54,7 @@ def token():
 @app.route("/voice", methods=['POST'])
 def voice():
     resp = VoiceResponse()
-    if request.form.get("To") and request.form["To"] == twilio_number:
+    if request.form.get("To") == twilio_number:
         # Receiving an incoming call to our Twilio number
         dial = Dial()
         dial.client(identity)
