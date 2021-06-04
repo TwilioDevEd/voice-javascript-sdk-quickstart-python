@@ -30,16 +30,16 @@
         log("Twilio.Device Error: " + error.message);
       });
 
-      device.on("incoming", function (conn) {
-        log("Incoming connection from " + conn.parameters.From);
+      device.on("incoming", function (call) {
+        log("Incoming Call from " + call.parameters.From);
         var archEnemyPhoneNumber = "+12093373517";
 
-        if (conn.parameters.From === archEnemyPhoneNumber) {
-          conn.reject();
+        if (call.parameters.From === archEnemyPhoneNumber) {
+          call.reject();
           log("It's your nemesis. Rejected call.");
         } else {
-          // accept the incoming connection and start two-way audio
-          conn.accept();
+          // accept the incoming call and start two-way audio
+          call.accept();
         }
       });
 
@@ -127,8 +127,8 @@
     device.audio.ringtoneDevices.set(selectedDevices);
   });
 
-  function bindVolumeIndicators(connection) {
-    connection.volume(function (inputVolume, outputVolume) {
+  function bindVolumeIndicators(call) {
+    call.on("volume", function (inputVolume, outputVolume) {
       var inputColor = 'red';
       if (inputVolume < .50) {
         inputColor = 'green';
