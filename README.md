@@ -10,7 +10,9 @@
 
 ## About
 
-This application should give you a ready-made starting point for writing your own voice apps with Twilio Client. This application uses the lightweight [Flask Framework](http://flask.pocoo.org/).
+This application should give you a ready-made starting point for writing your own voice apps with Twilio Client. This application uses the lightweight [Flask Framework](http://flask.pocoo.org/). Once you set up the application, you will be able to make and receive calls from your browser. You will also be able to switch between audio input/output devices, and see dynamic volume levels on the call.
+
+![screenshot of application homepage](./screenshot_on_call.png)
 
 Implementations in other languages:
 
@@ -46,13 +48,13 @@ Before we begin, we need to collect all the config values we need to run the app
    cd client-quickstart-python
    ```
 
-2. Run `make install`. This command will create a Python virtual environment, load it, and install Python the dependencies. It will also download the @twilio/voice-sdk npm package and create a `node_modules` directory inside the `static` directory.
+2. Run `make install`. This command will create a Python virtual environment, load it, and install the Python dependencies. It will also download the `@twilio/voice-sdk` npm package and create a `node_modules` directory inside the `static` directory.
 
    ```bash
    make install
    ```
 
-3. Create a configuration file for your application by copying the `.env.example` file, and edit the `.env` file to include your account and application details.
+3. Create a configuration file for your application by copying the `.env.example` file to a new file called `.env`. Then, edit the `.env` file to include your account and application details.
 
    ```bash
    cp .env.example .env
@@ -85,7 +87,7 @@ Before we begin, we need to collect all the config values we need to run the app
 
 5. Navigate to [http://localhost:5000](http://localhost:5000)
 
-6. Expose your application to the wider internet using [ngrok](https://ngrok.com/download). You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html) for more details. This step **is important** because the application won't work as expected if you run it through localhost.
+6. Expose your application to the wider internet using [ngrok](https://ngrok.com/download). You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html) for more details. This step **is important** and your application won't work if you only run the server on localhost.
 
    ```bash
    ngrok http 5000
@@ -100,14 +102,23 @@ Voice "REQUEST URL" to be your ngrok URL plus `/voice`. For example:
    ![screenshot of twiml app](https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/TwilioClientRequestUrl.original.png)
 
    > **Note:** You must set your webhook urls to the `https` ngrok tunnel created.
-   You should now be ready to rock! Make some phone calls.
-   Open it on another device and call yourself. Note that Twilio Client requires
-   WebRTC enabled browsers, so Edge and Internet Explorer will not work for testing.
-   We'd recommend Google Chrome or Mozilla Firefox instead.
 
-   ![screenshot of phone app](https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/TwilioClientQuickstart.original.png)
+You should now be ready to rock! Make some phone calls or receiving incoming calls in the application.
+Note that Twilio Client requires WebRTC enabled browsers, so Edge and Internet Explorer will not work for testing.
+We'd recommend Google Chrome or Mozilla Firefox instead.
 
-That's it!
+![screenshot of application homepage](./screenshot_homepage.png)
+
+When the server starts, you will be assigned a random client name, which will appear in the top left corner of the homepage. This client name is used as the identity field when generating an access token for the client, and is also used to route incoming calls to the correct client device.
+
+You can make outbound calls by entering a phone number or a client name. If you would like to test browser-to-browser calls, open one browser page to `localhost:5000` and then stop and restart the server, which will generate a new client identity. Open a new browser to `localhost:5000`, and you should see the new client name. You can make calls between these two clients by entering one client's name in the box for making an outbound call.
+
+![screenshot of application homepage](./screenshot_two_calls.png)
+
+You can also receiving an incoming call to your browser by calling the Twilio number you specified as your `TWILIO_CALLER_ID` in your `.env` file.
+
+If you see "Unknown Audio Output Device 1" in the "Ringtone" or "Speaker" devices lists, click the button below the boxes (Seeing "Unknown" Devices?) to have your browser identify your input and output devices.
+![screenshot of unknown devices](./screenshot_unknown_devices.png)
 
 ### Docker
 
@@ -123,7 +134,8 @@ If you have [Docker](https://www.docker.com/) already installed on your machine,
 You can run the tests locally with the following command. Before running, make sure the virtual environment is activated.
 
 ```bash
-$ python3 -m pytest
+source venv/bin/activate
+python3 -m pytest
 ```
 
 ### Cloud deployment
