@@ -23,6 +23,8 @@ Implementations in other languages:
 ### Requirements
 
 - [Python](https://www.python.org/) **3.6**, **3.7** or **3.8** version.
+- [Node](https://nodejs.org/en/), version **14.0** or above.
+- [ngrok](https://ngrok.com/download)
 
 ### Twilio Account Settings
 
@@ -44,13 +46,13 @@ Before we begin, we need to collect all the config values we need to run the app
    cd client-quickstart-python
    ```
 
-2. Create the virtual environment, load it and install the dependencies.
+2. Run `make install`. This command will create a Python virtual environment, load it, and install Python the dependencies. It will also download the @twilio/voice-sdk npm package and create a `node_modules` directory inside the `static` directory.
 
    ```bash
    make install
    ```
 
-3. Create a configuration file for your application and edit the `.env` file.
+3. Create a configuration file for your application by copying the `.env.example` file, and edit the `.env` file to include your account and application details.
 
    ```bash
    cp .env.example .env
@@ -75,7 +77,7 @@ Before we begin, we need to collect all the config values we need to run the app
    After re-running the script, the environment variables will be peramently set for
    your user account.
 
-4. Run the application, will run on port 5000.
+4. Run the application. It will run locally on port 5000.
 
    ```bash
    make serve
