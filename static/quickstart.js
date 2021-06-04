@@ -190,6 +190,9 @@ function incomingCallUI(call) {
   document.getElementById("incoming-call").style.display = "block";
   document.getElementById("incoming-number").innerHTML = call.parameters.From;
   document.getElementById("button-hangup-incoming").style.display = "none";
+  document.getElementById("button-accept-incoming").style.display = "inline";
+  document.getElementById("button-reject-incoming").style.display = "inline";
+
   document.getElementById('button-accept-incoming').onclick = function () {
       acceptIncomingCall(call);
   }
