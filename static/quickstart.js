@@ -86,12 +86,12 @@
   document.getElementById('button-call').onclick = function () {
     // get the phone number to connect the call to
     var params = {
-      To: document.getElementById('phone-number').value
+      phone: document.getElementById('phone-number').value
     };
 
-    console.log('Calling ' + params.To + '...');
+    console.log('Calling ' + params.phone + '...');
     if (device) {
-      outgoingCall = device.connect({params: params});
+      var outgoingCall = device.connect({params: params});
       outgoingCall.then(callEstablished);
     }
   };
