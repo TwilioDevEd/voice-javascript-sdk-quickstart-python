@@ -16,6 +16,10 @@ fake = Faker()
 alphanumeric_only = re.compile('[\W_]+')
 phone_pattern = re.compile(r"^[\d\+\-\(\) ]+$")
 
+twilio_number = os.environ["TWILIO_CALLER_ID"]
+
+# Generate a random user name
+identity = alphanumeric_only.sub('', fake.user_name())
 
 @app.route('/')
 def index():
@@ -30,9 +34,6 @@ def token():
     api_key = os.environ['API_KEY']
     api_secret = os.environ['API_SECRET']
 
-    # Generate a random user name
-    identity = alphanumeric_only.sub('', fake.user_name())
-    
     # Create access token with credentials
     token = AccessToken(account_sid, api_key, api_secret, identity=identity)
 
@@ -54,14 +55,20 @@ def token():
 @app.route("/voice", methods=['POST'])
 def voice():
     resp = VoiceResponse()
-    if "To" in request.form and request.form["To"] != '':
-        dial = Dial(caller_id=os.environ['TWILIO_CALLER_ID'])
+    if request.form.get("To") and request.form["To"] == twilio_number:
+        # Receiving an incoming call to our Twilio number
+        dial = Dial()
+        dial.client(identity)
+        resp.append(dial)
+    elif request.form.get("Caller").startswith("client") and request.form.get("phone"):
+        # Placing an outbound call from the Twilio client
+        dial = Dial(caller_id=twilio_number)
         # wrap the phone number or client name in the appropriate TwiML verb
         # by checking if the number given has only digits and format symbols
-        if phone_pattern.match(request.form["To"]):
-            dial.number(request.form["To"])
+        if phone_pattern.match(request.form["phone"]):
+            dial.number(request.form["phone"])
         else:
-            dial.client(request.form["To"])
+            dial.client(request.form["phone"])
         resp.append(dial)
     else:
         resp.say("Thanks for calling!")
