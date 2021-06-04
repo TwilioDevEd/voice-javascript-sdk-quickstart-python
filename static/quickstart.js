@@ -4,8 +4,8 @@
   var outputVolumeBar = document.getElementById('output-volume');
   var inputVolumeBar = document.getElementById('input-volume');
   var volumeIndicators = document.getElementById('volume-indicators');
-  var device;
-  var outgoingCall;
+  var device, outgoingCall;
+
   log('Requesting Access Token...');
   $.getJSON('/token')
     .then(function (data) {
@@ -15,7 +15,7 @@
       // Setup Twilio.Device
       device = new Twilio.Device(data.token, {
         // Set Opus as our preferred codec. Opus generally performs better, requiring less bandwidth and
-        // providing better audio quality in restrained network conditions. Opus will be default in 2.0.
+        // providing better audio quality in restrained network conditions.
         codecPreferences: ["opus", "pcmu"],
       });
 
@@ -31,16 +31,7 @@
       });
 
       device.on("incoming", function (call) {
-        log("Incoming Call from " + call.parameters.From);
-        var archEnemyPhoneNumber = "+12093373517";
-
-        if (call.parameters.From === archEnemyPhoneNumber) {
-          call.reject();
-          log("It's your nemesis. Rejected call.");
-        } else {
-          // accept the incoming call and start two-way audio
-          call.accept();
-        }
+          incomingCallUI(call);
       });
 
       setClientNameUI(data.identity);
@@ -54,33 +45,8 @@
     })
     .catch(function (err) {
       console.log(err);
-      log("Could not get a token from server!");
+      log("Error starting client!");
     });
-
-  function callEstablished (call) {
-    call.addListener("accept", callConnected);
-    call.addListener("disconnect", callDisconnected);
-
-    document.getElementById('button-hangup').onclick = function () {
-      log('Hanging up...');
-      call.disconnect();
-    }
-  }
-
-  function callConnected (call) {
-    log("Successfully established call!");
-    document.getElementById("button-call").style.display = "none";
-    document.getElementById("button-hangup").style.display = "inline";
-    volumeIndicators.style.display = 'block';
-    bindVolumeIndicators(call);
-  };
-
-  function callDisconnected (call) {
-    log("Call ended.");
-    document.getElementById("button-call").style.display = "inline";
-    document.getElementById("button-hangup").style.display = "none";
-    volumeIndicators.style.display = 'none';
-  };
     
   // Bind button to make call
   document.getElementById('button-call').onclick = function () {
@@ -155,6 +121,31 @@
     updateDevices(speakerDevices, device.audio.speakerDevices.get(), device);
     updateDevices(ringtoneDevices, device.audio.ringtoneDevices.get(), device);
   }
+
+  function callEstablished (call) {
+    call.addListener("accept", callConnected);
+    call.addListener("disconnect", callDisconnected);
+
+    document.getElementById('button-hangup').onclick = function () {
+      log('Hanging up...');
+      call.disconnect();
+    }
+  }
+
+  function callConnected (call) {
+    log("Successfully established call!");
+    document.getElementById("button-call").style.display = "none";
+    document.getElementById("button-hangup").style.display = "inline";
+    volumeIndicators.style.display = 'block';
+    bindVolumeIndicators(call);
+  };
+
+  function callDisconnected (call) {
+    log("Call ended.");
+    document.getElementById("button-call").style.display = "inline";
+    document.getElementById("button-hangup").style.display = "none";
+    volumeIndicators.style.display = 'none';
+  };
 });
 
 // Update the available ringtone and speaker devices
@@ -192,3 +183,49 @@ function setClientNameUI(clientName) {
   div.innerHTML = 'Your client name: <strong>' + clientName +
     '</strong>';
 }
+
+// Update UI when an incoming call comes in
+function incomingCallUI(call) {
+  log("Incoming Call from " + call.parameters.From);
+  document.getElementById("incoming-call").style.display = "block";
+  document.getElementById("incoming-number").innerHTML = call.parameters.From;
+  document.getElementById("button-hangup-incoming").style.display = "none";
+  document.getElementById('button-accept-incoming').onclick = function () {
+      acceptIncomingCall(call);
+  }
+  document.getElementById('button-reject-incoming').onclick = function () {
+      rejectIncomingCall(call);
+  }
+  document.getElementById('button-hangup-incoming').onclick = function () {
+      hangupIncomingCall(call);
+  }
+  call.addListener('cancel', incomingCallDisconnected);
+}
+
+// Handle accepting, rejecting, and hanging up an incoming call
+function acceptIncomingCall (call) {
+  call.accept();
+  log("Accepted incoming call")
+  document.getElementById("button-hangup-incoming").style.display = "inline";
+  document.getElementById("button-accept-incoming").style.display = "none";
+  document.getElementById("button-reject-incoming").style.display = "none";
+}
+
+function rejectIncomingCall (call) {
+  call.reject();
+  log("Rejected incoming call")
+  document.getElementById("incoming-number").innerHTML = "";
+  document.getElementById("incoming-call").style.display = "none";
+}
+
+function hangupIncomingCall (call) {
+  call.disconnect();
+  log("Hung up incoming call")
+  document.getElementById("incoming-number").innerHTML = "";
+  document.getElementById("incoming-call").style.display = "none";
+}
+function incomingCallDisconnected (call) {
+  log("Incoming call ended.");
+  document.getElementById("incoming-number").innerHTML = "";
+  document.getElementById("incoming-call").style.display = "none";
+}; 
