@@ -1,10 +1,10 @@
 ﻿$(function () {
-  var speakerDevices = document.getElementById('speaker-devices');
-  var ringtoneDevices = document.getElementById('ringtone-devices');
-  var outputVolumeBar = document.getElementById('output-volume');
-  var inputVolumeBar = document.getElementById('input-volume');
-  var volumeIndicators = document.getElementById('volume-indicators');
-  var device, outgoingCall;
+  const speakerDevices = document.getElementById('speaker-devices');
+  const ringtoneDevices = document.getElementById('ringtone-devices');
+  const outputVolumeBar = document.getElementById('output-volume');
+  const inputVolumeBar = document.getElementById('input-volume');
+  const volumeIndicators = document.getElementById('volume-indicators');
+  const device;
 
   log('Requesting Access Token...');
   $.getJSON('/token')
@@ -51,7 +51,7 @@
   // Bind button to make call
   document.getElementById('button-call').onclick = function () {
     // get the phone number to connect the call to
-    var params = {
+    const params = {
       phone: document.getElementById('phone-number').value
     };
 
@@ -68,7 +68,7 @@
   };
 
   speakerDevices.addEventListener("change", function () {
-    var selectedDevices = [].slice
+    const selectedDevices = [].slice
       .call(speakerDevices.children)
       .filter(function (node) {
         return node.selected;
@@ -81,7 +81,7 @@
   });
 
   ringtoneDevices.addEventListener("change", function () {
-    var selectedDevices = [].slice
+    const selectedDevices = [].slice
       .call(ringtoneDevices.children)
       .filter(function (node) {
         return node.selected;
@@ -95,7 +95,7 @@
 
   function bindVolumeIndicators(call) {
     call.on("volume", function (inputVolume, outputVolume) {
-      var inputColor = 'red';
+      let inputColor = 'red';
       if (inputVolume < .50) {
         inputColor = 'green';
       } else if (inputVolume < .75) {
@@ -105,7 +105,7 @@
       inputVolumeBar.style.width = Math.floor(inputVolume * 300) + 'px';
       inputVolumeBar.style.background = inputColor;
 
-      var outputColor = 'red';
+      let outputColor = 'red';
       if (outputVolume < .50) {
         outputColor = 'green';
       } else if (outputVolume < .75) {
@@ -153,14 +153,14 @@ function updateDevices(selectEl, selectedDevices, device) {
   selectEl.innerHTML = "";
 
   device.audio.availableOutputDevices.forEach(function (device, id) {
-    var isActive = selectedDevices.size === 0 && id === "default";
+    const isActive = selectedDevices.size === 0 && id === "default";
     selectedDevices.forEach(function (device) {
       if (device.deviceId === id) {
         isActive = true;
       }
     });
 
-    var option = document.createElement("option");
+    const option = document.createElement("option");
     option.label = device.label;
     option.setAttribute("data-id", id);
     if (isActive) {
@@ -172,14 +172,14 @@ function updateDevices(selectEl, selectedDevices, device) {
 
 // Activity log
 function log(message) {
-  var logDiv = document.getElementById('log');
+  const logDiv = document.getElementById('log');
   logDiv.innerHTML += '<p>&gt;&nbsp;' + message + '</p>';
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
 // Set the client name in the UI
 function setClientNameUI(clientName) {
-  var div = document.getElementById('client-name');
+  const div = document.getElementById('client-name');
   div.innerHTML = 'Your client name: <strong>' + clientName +
     '</strong>';
 }
