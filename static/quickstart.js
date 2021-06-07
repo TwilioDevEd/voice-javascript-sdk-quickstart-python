@@ -21,7 +21,7 @@
 
       device.register();
 
-      device.on("registered", function (device) {
+      device.on("registered", function () {
         log("Twilio.Device Ready!");
         document.getElementById("call-controls").style.display = "block";
       });
@@ -30,9 +30,7 @@
         log("Twilio.Device Error: " + error.message);
       });
 
-      device.on("incoming", function (call) {
-          incomingCallUI(call);
-      });
+      device.on("incoming", incomingCallUI);
 
       setClientNameUI(data.identity);
 
@@ -57,8 +55,7 @@
 
     console.log('Calling ' + params.phone + '...');
     if (device) {
-      var outgoingCall = device.connect({params: params});
-      outgoingCall.then(callEstablished);
+      device.connect({ params }).then(callEstablished);
     }
   };
 
