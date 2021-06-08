@@ -4,7 +4,7 @@
   const outputVolumeBar = document.getElementById('output-volume');
   const inputVolumeBar = document.getElementById('input-volume');
   const volumeIndicators = document.getElementById('volume-indicators');
-  const device;
+  let device;
 
   log('Requesting Access Token...');
   $.getJSON('/token')
