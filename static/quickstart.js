@@ -30,7 +30,7 @@
         log("Twilio.Device Error: " + error.message);
       });
 
-      device.on("incoming", incomingCallUI);
+      device.on("incoming", setupIncomingCallUI);
 
       setClientNameUI(data.identity);
 
@@ -65,27 +65,17 @@
   };
 
   speakerDevices.addEventListener("change", function () {
-    const selectedDevices = [].slice
-      .call(speakerDevices.children)
-      .filter(function (node) {
-        return node.selected;
-      })
-      .map(function (node) {
-        return node.getAttribute("data-id");
-      });
+    const selectedDevices = Array.from(speakerDevices.children)
+      .filter((node) => node.selected)
+      .map((node) => node.getAttribute("data-id"));
 
     device.audio.speakerDevices.set(selectedDevices);
   });
 
   ringtoneDevices.addEventListener("change", function () {
-    const selectedDevices = [].slice
-      .call(ringtoneDevices.children)
-      .filter(function (node) {
-        return node.selected;
-      })
-      .map(function (node) {
-        return node.getAttribute("data-id");
-      });
+    const selectedDevices = Array.from(ringtoneDevices.children)
+      .filter((node) => node.selected)
+      .map((node) => node.getAttribute("data-id"));
 
     device.audio.ringtoneDevices.set(selectedDevices);
   });
@@ -182,7 +172,7 @@ function setClientNameUI(clientName) {
 }
 
 // Update UI when an incoming call comes in
-function incomingCallUI(call) {
+function setupIncomingCallUI(call) {
   log("Incoming Call from " + call.parameters.From);
   document.getElementById("incoming-call").style.display = "block";
   document.getElementById("incoming-number").innerHTML = call.parameters.From;
