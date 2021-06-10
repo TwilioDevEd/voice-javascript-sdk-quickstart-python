@@ -140,7 +140,7 @@ function updateDevices(selectEl, selectedDevices, device) {
   selectEl.innerHTML = "";
 
   device.audio.availableOutputDevices.forEach(function (device, id) {
-    const isActive = selectedDevices.size === 0 && id === "default";
+    let isActive = selectedDevices.size === 0 && id === "default";
     selectedDevices.forEach(function (device) {
       if (device.deviceId === id) {
         isActive = true;
