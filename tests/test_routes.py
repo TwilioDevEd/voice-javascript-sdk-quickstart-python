@@ -6,7 +6,7 @@ import app
 def test_index(app, client):
     res = client.get("/")
     assert res.status_code == 200
-    assert "Make a Call:" in res.get_data(as_text=True)
+    assert "Make a Call" in res.get_data(as_text=True)
 
 
 def test_voice_has_phone_parameter(app, client):
