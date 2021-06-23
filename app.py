@@ -2,37 +2,39 @@
 
 import os
 import re
-from flask import Flask, jsonify, request, Response, redirect
-from faker import Faker
-from twilio.jwt.access_token import AccessToken
-from twilio.jwt.access_token.grants import VoiceGrant
-from twilio.twiml.voice_response import VoiceResponse, Dial
 
 from dotenv import load_dotenv
+from faker import Faker
+from flask import Flask, Response, jsonify, redirect, request
+from twilio.jwt.access_token import AccessToken
+from twilio.jwt.access_token.grants import VoiceGrant
+from twilio.twiml.voice_response import Dial, VoiceResponse
+
 load_dotenv()
 
 app = Flask(__name__)
 fake = Faker()
-alphanumeric_only = re.compile('[\W_]+')
+alphanumeric_only = re.compile("[\W_]+")
 phone_pattern = re.compile(r"^[\d\+\-\(\) ]+$")
 
 twilio_number = os.environ["TWILIO_CALLER_ID"]
 
 # Generate a random user name
-identity = alphanumeric_only.sub('', fake.user_name())
+identity = alphanumeric_only.sub("", fake.user_name())
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return app.send_static_file('index.html')
+    return app.send_static_file("index.html")
 
 
-@app.route('/token', methods=['GET'])
+@app.route("/token", methods=["GET"])
 def token():
     # get credentials for environment variables
-    account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    application_sid = os.environ['TWILIO_TWIML_APP_SID']
-    api_key = os.environ['API_KEY']
-    api_secret = os.environ['API_SECRET']
+    account_sid = os.environ["TWILIO_ACCOUNT_SID"]
+    application_sid = os.environ["TWILIO_TWIML_APP_SID"]
+    api_key = os.environ["API_KEY"]
+    api_secret = os.environ["API_SECRET"]
 
     # Create access token with credentials
     token = AccessToken(account_sid, api_key, api_secret, identity=identity)
@@ -45,13 +47,13 @@ def token():
     token.add_grant(voice_grant)
 
     # Return token info as JSON
-    token=token.to_jwt()
+    token = token.to_jwt()
 
     # Return token info as JSON
     return jsonify(identity=identity, token=token)
 
 
-@app.route("/voice", methods=['POST'])
+@app.route("/voice", methods=["POST"])
 def voice():
     resp = VoiceResponse()
     if request.form.get("To") == twilio_number:
@@ -72,12 +74,13 @@ def voice():
     else:
         resp.say("Thanks for calling!")
 
-    return Response(str(resp), mimetype='text/xml')
+    return Response(str(resp), mimetype="text/xml")
+
 
 @app.route("/static/twilio.min.js")
 def static_files():
     return redirect("/static/node_modules/@twilio/voice-sdk/dist/twilio.min.js")
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
