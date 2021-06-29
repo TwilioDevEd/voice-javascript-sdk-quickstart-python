@@ -10,7 +10,7 @@
 
 ## About
 
-This application should give you a ready-made starting point for writing your own voice apps with the Twilio Voice JavaScript SDK 2.0 (formerly known as Twilio Client).
+This application should give you a ready-made starting point for writing your own voice apps with the Twilio Voice JavaScript SDK (formerly known as Twilio Client).
 
 This application uses the lightweight [Flask Framework](http://flask.pocoo.org/). Once you set up the application, you will be able to make and receive calls from your browser. You will also be able to switch between audio input/output devices, and see dynamic volume levels on the call.
 
@@ -140,8 +140,7 @@ Enter one client's name in the other client's "Make a Call" input field, and pre
 
 ### Receiving incoming calls from a non-browser device:
 
-You will first need to configure your Twilio Voice phone number (the phone number you used as the `TWILIO_CALLER_ID` configuration value) with the same
-ngrok url that you did for your TwiML app. This tells Twilio how to handle an incoming call directed to your Twilio Voice number.
+You will first need to configure your Twilio Voice phone number (the phone number you used as the `TWILIO_CALLER_ID` configuration value) to route incoming calls to your TwiML app. This tells Twilio how to handle an incoming call directed to your Twilio Voice number.
 
 1. Log in to the [Twilio Console](https://www.twilio.com/console)
 2. Navigate to your [Active Number list](https://www.twilio.com/console/phone-numbers/incoming)
