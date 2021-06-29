@@ -16,7 +16,6 @@ else
 	. venv/bin/activate; \
 	pip3 install -r requirements.txt;
 endif
-	cd static && npm install
 
 serve:
 ifeq ($(UNAME), Windows)

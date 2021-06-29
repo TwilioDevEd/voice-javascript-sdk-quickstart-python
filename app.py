@@ -77,10 +77,5 @@ def voice():
     return Response(str(resp), mimetype="text/xml")
 
 
-@app.route("/static/twilio.min.js")
-def static_files():
-    return redirect("/static/node_modules/@twilio/voice-sdk/dist/twilio.min.js")
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
