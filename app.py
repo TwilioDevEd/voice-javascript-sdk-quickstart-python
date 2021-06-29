@@ -17,10 +17,10 @@ fake = Faker()
 alphanumeric_only = re.compile("[\W_]+")
 phone_pattern = re.compile(r"^[\d\+\-\(\) ]+$")
 
-twilio_number = os.environ["TWILIO_CALLER_ID"]
+twilio_number = os.environ.get("TWILIO_CALLER_ID")
 
-# Generate a random user name
-identity = alphanumeric_only.sub("", fake.user_name())
+# Store the most recently created identity in memory for routing calls
+IDENTITY = {"identity": ""}
 
 
 @app.route("/")
@@ -35,6 +35,10 @@ def token():
     application_sid = os.environ["TWILIO_TWIML_APP_SID"]
     api_key = os.environ["API_KEY"]
     api_secret = os.environ["API_SECRET"]
+
+    # Generate a random user name and store it
+    identity = alphanumeric_only.sub("", fake.user_name())
+    IDENTITY["identity"] = identity
 
     # Create access token with credentials
     token = AccessToken(account_sid, api_key, api_secret, identity=identity)
@@ -59,7 +63,8 @@ def voice():
     if request.form.get("To") == twilio_number:
         # Receiving an incoming call to our Twilio number
         dial = Dial()
-        dial.client(identity)
+        # Route to the most recently created client based on the identity stored in the session
+        dial.client(IDENTITY["identity"])
         resp.append(dial)
     elif request.form.get("phone"):
         # Placing an outbound call from the Twilio client
