@@ -66,15 +66,15 @@ def voice():
         # Route to the most recently created client based on the identity stored in the session
         dial.client(IDENTITY["identity"])
         resp.append(dial)
-    elif request.form.get("phone"):
+    elif request.form.get("To"):
         # Placing an outbound call from the Twilio client
         dial = Dial(caller_id=twilio_number)
         # wrap the phone number or client name in the appropriate TwiML verb
         # by checking if the number given has only digits and format symbols
-        if phone_pattern.match(request.form["phone"]):
-            dial.number(request.form["phone"])
+        if phone_pattern.match(request.form["To"]):
+            dial.number(request.form["To"])
         else:
-            dial.client(request.form["phone"])
+            dial.client(request.form["To"])
         resp.append(dial)
     else:
         resp.say("Thanks for calling!")
