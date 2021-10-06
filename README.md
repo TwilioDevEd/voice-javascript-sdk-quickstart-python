@@ -20,7 +20,7 @@ Implementations in other languages:
 
 | .NET | Java | Node | PHP | Ruby |
 | :--- | :--- | :----- | :-- | :--- |
-| [In progress] | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-java)  | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-node)  | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-php) | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-ruby)  |
+| [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-csharp) | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-java)  | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-node)  | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-php) | [Done](https://github.com/TwilioDevEd/voice-javascript-sdk-quickstart-ruby)  |
 
 ## Set Up
 
