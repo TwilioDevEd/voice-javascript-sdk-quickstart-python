@@ -37,7 +37,6 @@
   speakerDevices.addEventListener("change", updateOutputDevice);
   ringtoneDevices.addEventListener("change", updateRingtoneDevice);
   
-
   // SETUP STEP 1:
   // Browser client should be started after a user gesture
   // to avoid errors in the browser console re: AudioContext
