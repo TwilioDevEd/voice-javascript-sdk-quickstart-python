@@ -67,7 +67,7 @@
       logLevel: 1,
       // Set Opus as our preferred codec. Opus generally performs better, requiring less bandwidth and
       // providing better audio quality in restrained network conditions.
-      codecPreferences: ["opus", "pcmu"],
+      codecPreferences: ["opus", "pcmu"]
     });
 
     addDeviceListeners(device);
